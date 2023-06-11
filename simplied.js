@@ -80,13 +80,12 @@ client.on('message', async (msg) => {
         stickerName: 'RoboGPT',
         stickerAuthor: 'StickerPack by RoboGPT',
       });
-    } else if (chat.isGroup && msg.body.startsWith('/tagall')) {
-        const participants = await chat.participants;
-        const taggedUsers = participants.filter((participant) => participant.id._serialized !== client.user.id._serialized);
-        const taggedUserNames = taggedUsers.map((participant) => `@${participant.id.user}`);
-        const taggedUserMessage = taggedUserNames.join(' ');
-  
-        await Promise.all([msg.react('👥'), chat.sendMessage(taggedUserMessage)]);
+    } else if (chat.isGroup && msg.body === '/tagall') {
+      const participants = await chat.participants;
+      const taggedUserNames = participants.map((participant) => `@${participant.id.user}`);
+      const taggedUserMessage = taggedUserNames.join(' ');
+
+      await Promise.all([msg.react('👥'), chat.sendMessage(taggedUserMessage)]);
     } else if (chat.isGroup && msg.body.startsWith('/ask ')) {
       const question = msg.body.slice(questionOffset);
       const reply = await generateResponse(question);
