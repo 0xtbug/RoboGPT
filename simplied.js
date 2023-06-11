@@ -81,11 +81,11 @@ client.on('message', async (msg) => {
         stickerName: 'RoboGPT',
         stickerAuthor: 'StickerPack by RoboGPT',
       });
-    } else if (chat.isGroup && msg.body === '/tagall') {
-        const sender = await chat.getGroupParticipant(msg.author);
+     } else if (chat.isGroup && msg.body === '/tagall') {
+        const sender = await chat.getParticipantById(msg.author);
         if (!sender.isAdmin) {
-            await Promise.all([msg.react('❌'), chat.sendMessage('Anda harus menjadi admin untuk menggunakan perintah ini.')]);
-            return;
+          await Promise.all([msg.react('❌'), chat.sendMessage('You must be an admin to use this command.')]);
+          return;
         }
         let text = "";
         let mentions = [];
