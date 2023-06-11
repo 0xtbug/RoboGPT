@@ -82,10 +82,15 @@ client.on('message', async (msg) => {
         stickerAuthor: 'StickerPack by RoboGPT',
       });
     } else if (chat.isGroup && msg.body === '/tagall') {
-      const participants = await chat.participants.getAll();
-      const mentions = participants.map((participant) => client.getContactById(participant.id._serialized));
-      const mentionString = mentions.map((contact) => `@${contact.number}`).join(' ');
-      await chat.sendMessage(mentionString);
+        let text = "";
+        let mentions = [];
+        for (let participant of chat.participants) {
+          const contact = await client.getContactById(participant.id._serialized);
+          mentions.push(contact);
+          text += `@${participant.id.user} `;
+        }
+        await chat.sendMessage(text, { mentions });
+        await msg.delete();
     } else if (chat.isGroup && msg.body.startsWith('/ask ')) {
       const question = msg.body.slice(questionOffset);
       const reply = await generateResponse(question);
