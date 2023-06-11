@@ -1,10 +1,11 @@
 {
   "name": "whatsapp-chatbot",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "simplied.js",
   "scripts": {
-    "start": "node bot.js"
+    "start": "pm2 start simplied.js --deep-monitoring --attach --name gpt",
+    "stop": "pm2 stop gpt"
   },
   "keywords": [],
   "author": "",
@@ -12,7 +13,10 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "openai": "^3.2.1",
+    "pm2": "^5.2.0",
     "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.20.0"
+    "whatsapp-web.js": "^1.20.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0"
   }
 }
