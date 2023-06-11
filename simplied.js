@@ -36,13 +36,13 @@ client.on('message', async (msg) => {
     switch (msg.body) {
       case '/menu':
         const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan parameter /ask <pertanyaan>\n/sticker : Mengirimkan foto untuk dikonversi menjadi stiker\nsummarize : Untuk merangkum teks yang diberikan. Gunakan /summarize <teks>\n/donasi : Donasi Anda sangat membantu bagi saya!`;
-        await chat.react('👋');
+        await msg.react('👋');
         await chat.sendMessage(menuReply);
         break;
 
       case '/donasi':
         const donationReply = `Berapapun donasinya akan saya terima!, terima kasih 😊\n\nOVO: 089650572376\nDANA: 089650572376`;
-        await chat.react('❤️');
+        await msg.react('❤️');
         await chat.sendMessage(donationReply);
         break;
 
@@ -58,7 +58,7 @@ client.on('message', async (msg) => {
         }
     }
   } catch (error) {
-    await chat.react('❌');
+    await msg.react('❌');
     console.error('Error handling message:', error);
   }
 });
@@ -66,12 +66,12 @@ client.on('message', async (msg) => {
 async function handleSummarizeCommand(msg, chat) {
   const text = msg.body.slice('/summarize '.length);
   const summary = await summarizeText(text);
-  await chat.react('📝');
+  await msg.react('📝');
   await chat.sendMessage(summary);
 }
 
 async function handleStickerCommand(msg, chat) {
-  await chat.react('👌');
+  await msg.react('👌');
   await msg.reply('Foto sedang diproses...');
   const media = await msg.downloadMedia();
   await chat.sendMessage(media, {
@@ -84,7 +84,7 @@ async function handleStickerCommand(msg, chat) {
 async function handleGroupQuestion(msg, chat) {
   const question = msg.body.slice(questionOffset);
   const reply = await generateResponse(question);
-  await chat.react('✅');
+  await msg.react('✅');
   await chat.sendMessage(reply);
 }
 
@@ -101,7 +101,7 @@ function formatChatHistory(history, fromMe) {
 
   const formattedHistory = history
     .map((msg) => {
-      const sender = msg.fromMe ? 'Robo' : msg.author || 'Friend';
+      const sender = msg.fromMe ? '' : msg.author || 'Friend';
       return `${sender}: ${msg.body}`;
     })
     .join('\n');
