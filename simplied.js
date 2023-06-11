@@ -51,8 +51,14 @@ client.on('message', async (msg) => {
   try {
     console.log(`MESSAGE RECEIVED ${msg.body}`);
     const chat = await msg.getChat();
-
-    if (msg.body === '/menu') {
+    if (msg.type === 'audio') {
+        await Promise.all([msg.react('🎙️'), msg.reply('Transcribing audio...')]);
+        const media = await msg.downloadMedia();
+        const filePath = `./audio/${msg.id}.${msg.mimetype.split('/')[1]}`;
+        fs.writeFileSync(filePath, media);
+        const transcription = await transcribeVoiceMessage(filePath);
+        await chat.sendMessage(transcription);
+    }else if (msg.body === '/menu') {
       const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan parameter /ask <pertanyaan>\n/sticker : Mengirimkan foto untuk dikonversi menjadi stiker\n/summarize : Untuk merangkum teks yang diberikan. Gunakan /summarize <teks>\n/donasi : Donasi Anda sangat membantu bagi saya!`;
       await Promise.all([msg.react('👋'), chat.sendMessage(menuReply)]);
     } else if (msg.body === '/donasi') {

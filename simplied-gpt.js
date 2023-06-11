@@ -1,3 +1,5 @@
+const axios = require('axios');
+const fs = require('fs');
 const { Configuration, OpenAIApi } = require("openai");
 const dotenv = require('dotenv');
 
@@ -42,9 +44,11 @@ const summarizeText = async (text) => {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
       prompt: `Summarize the following text into a few paragraphs at most, and make sure that the summary is actually smaller than the originally provided text:\n\n${text}`,
-      max_tokens: 200, // Adjust this value to control the length of the summary
-      temperature: 0.3, // Adjust this value to control the randomness of the output
+      max_tokens: 60, // Adjust this value to control the length of the summary
+      temperature: 1, // Adjust this value to control the randomness of the output
       top_p: 1, // Adjust this value to control the diversity of the output
+      frequency_penalty: 0.0, // Set the frequency penalty to 0, meaning the model will not consider the frequency of the generated response
+      presence_penalty: 1 // Set the presence penalty to 1, meaning the model will heavily penalize generating a response that has already been generated in the conversation.
     });
 
     // Extract the summary from the completion response
@@ -61,4 +65,35 @@ const summarizeText = async (text) => {
   }
 };
 
-module.exports = { generateResponse, summarizeText };
+// Function to transcribe voice message
+const transcribeVoiceMessage = async (filePath) => {
+  try {
+    // Read the audio file
+    const audioFile = fs.readFileSync(filePath);
+
+    // Make a POST request to the OpenAI transcription API
+    const response = await axios.post('https://api.openai.com/v1/audio/transcriptions', audioFile, {
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'multipart/form-data'
+      },
+      params: {
+        model: 'whisper-1'
+      }
+    });
+
+    // Extract the transcription from the response
+    const transcription = response.data.transcriptions[0].text;
+
+    return transcription;
+  } catch (error) {
+    // Catch specific errors if possible
+    if (error.response && error.response.status) {
+      console.log(`Error ${error.response.status}: ${error.response.data.error.message}`);
+    } else {
+      console.log(`Error: ${error.message}`);
+    }
+  }
+};
+
+module.exports = { generateResponse, summarizeText, transcribeVoiceMessage };
