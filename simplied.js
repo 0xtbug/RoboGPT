@@ -82,7 +82,7 @@ client.on('message', async (msg) => {
         stickerAuthor: 'StickerPack by RoboGPT',
       });
     } else if (chat.isGroup && msg.body === '/tagall') {
-        const sender = await chat.getContactById(msg.author);
+        const sender = await chat.getContactById(GroupParticipant.isAdmin);
         if (!sender.isAdmin) {
             await Promise.all([msg.react('❌'), chat.sendMessage('Anda harus menjadi admin untuk menggunakan perintah ini.')]);
             return;
