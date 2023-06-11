@@ -1,6 +1,6 @@
 const qrcode = require('qrcode-terminal');
 const { Client } = require('whatsapp-web.js');
-const { generateResponse, summarizeText } = require('./gpt');
+const { generateResponse, summarizeText } = require('./simplied-gpt.js');
 const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
 const dotenv = require('dotenv');
 
