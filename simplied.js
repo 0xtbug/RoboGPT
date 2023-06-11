@@ -82,11 +82,12 @@ client.on('message', async (msg) => {
         stickerAuthor: 'StickerPack by RoboGPT',
       });
      } else if (chat.isGroup && msg.body === '/tagall') {
-        const sender = await client.getParticipant(msg.author);
-        if (!sender.isAdmin) {
-          await Promise.all([msg.react('❌'), chat.sendMessage('You must be an admin to use this command.')]);
-          return;
-        }
+        // i can't fix 😵
+        // const sender = await client.getParticipant(msg.author);
+        // if (!sender.isAdmin) {
+        //   await Promise.all([msg.react('❌'), chat.sendMessage('You must be an admin to use this command.')]);
+        //   return;
+        // }
         let text = "";
         let mentions = [];
         for (let participant of chat.participants) {
