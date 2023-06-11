@@ -1,5 +1,5 @@
 const qrcode = require('qrcode-terminal');
-const { Client } = require('whatsapp-web.js');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 const { generateResponse, summarizeText } = require('./simplied-gpt.js');
 const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
 const dotenv = require('dotenv');
@@ -8,7 +8,26 @@ dotenv.config();
 
 const historyLimit = parseInt(process.env.HISTORY_LIMIT);
 const questionOffset = parseInt(process.env.QUESTION_OFFSET);
-const client = new Client();
+
+const client = new Client({
+    authStrategy: new LocalAuth({
+      clientId: "client",
+      dataPath: "./sessions",
+    }),
+    puppeteer: {
+        headless: true,
+        args: ['--no-sandbox']
+      },
+      authTimeoutMs: 0,
+      qrMaxRetries: 0,
+      takeoverOnConflict: false,
+      takeoverTimeoutMs: 0,
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36',
+      ffmpegPath: 'ffmpeg',
+      bypassCSP: false,
+      proxyAuthentication: undefined
+  });
+
 client.initialize();
 
 client.on('qr', (qr) => {
@@ -34,7 +53,7 @@ client.on('message', async (msg) => {
     const chat = await msg.getChat();
 
     if (msg.body === '/menu') {
-      const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan parameter /ask <pertanyaan>\n/sticker : Mengirimkan foto untuk dikonversi menjadi stiker\nsummarize : Untuk merangkum teks yang diberikan. Gunakan /summarize <teks>\n/donasi : Donasi Anda sangat membantu bagi saya!`;
+      const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan parameter /ask <pertanyaan>\n/sticker : Mengirimkan foto untuk dikonversi menjadi stiker\n/summarize : Untuk merangkum teks yang diberikan. Gunakan /summarize <teks>\n/donasi : Donasi Anda sangat membantu bagi saya!`;
       await Promise.all([msg.react('👋'), chat.sendMessage(menuReply)]);
     } else if (msg.body === '/donasi') {
       const donationReply = `Berapapun donasinya akan saya terima!, terima kasih 😊\n\nOVO: 089650572376\nDANA: 089650572376`;
@@ -61,7 +80,7 @@ client.on('message', async (msg) => {
       let formattedHistory = introduction;
       for (const msg of history) {
         const sender = msg.fromMe ? '' : msg.author || 'Friend';
-        formattedHistory += `${sender}: ${msg.body}\n`;
+        formattedHistory += `${msg.body}\n`; //${sender}: 
       }
       const reply = await generateResponse(formattedHistory);
       await chat.sendMessage(reply);
