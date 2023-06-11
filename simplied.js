@@ -10,23 +10,24 @@ const historyLimit = parseInt(process.env.HISTORY_LIMIT);
 const questionOffset = parseInt(process.env.QUESTION_OFFSET);
 
 const client = new Client({
-    authStrategy: new LocalAuth({
-      clientId: "client",
-      dataPath: "./sessions",
-    }),
-    puppeteer: {
-        headless: true,
-        args: ['--no-sandbox']
-      },
-      authTimeoutMs: 0,
-      qrMaxRetries: 0,
-      takeoverOnConflict: false,
-      takeoverTimeoutMs: 0,
-      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36',
-      ffmpegPath: 'ffmpeg',
-      bypassCSP: false,
-      proxyAuthentication: undefined
-  });
+  authStrategy: new LocalAuth({
+    clientId: 'client',
+    dataPath: './sessions',
+  }),
+  puppeteer: {
+    headless: true,
+    args: ['--no-sandbox'],
+  },
+  authTimeoutMs: 0,
+  qrMaxRetries: 0,
+  takeoverOnConflict: false,
+  takeoverTimeoutMs: 0,
+  userAgent:
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36',
+  ffmpegPath: 'ffmpeg',
+  bypassCSP: false,
+  proxyAuthentication: undefined,
+});
 
 client.initialize();
 
@@ -59,20 +60,20 @@ client.on('message', async (msg) => {
       const donationReply = `Berapapun donasinya akan saya terima!, terima kasih 😊\n\nOVO: 089650572376\nDANA: 089650572376`;
       await Promise.all([msg.react('❤️'), chat.sendMessage(donationReply)]);
     } else if (msg.body.startsWith('/summarize ')) {
-        const params = msg.body.slice('/summarize '.length).split(' ');
-        if (params.length < 2) {
-          await Promise.all([msg.react('❌'), chat.sendMessage('Format perintah tidak valid. Harap gunakan "/summarize <nilai> <teks>, ketik /menu jika bingung".')]);
-          return;
-        }
-        const maxTokens = parseInt(params[0]);
-        if (![60, 150, 200].includes(maxTokens)) {
-          await Promise.all([msg.react('❌'), chat.sendMessage('Nilai tidak valid untuk <value>. Silakan gunakan 60, 150, atau 200, ketik /menu jika bingung.')]);
-          return;
-        }
-        const text = params.slice(1).join(' ');
-        const summary = await summarizeText(maxTokens, text);
-        await Promise.all([msg.react('📝'), chat.sendMessage(summary)]);
-      } else if (msg.hasMedia && msg.body.startsWith('/sticker')) {
+      const params = msg.body.slice('/summarize '.length).split(' ');
+      if (params.length < 2) {
+        await Promise.all([msg.react('❌'), chat.sendMessage('Format perintah tidak valid. Harap gunakan "/summarize <nilai> <teks>, ketik /menu jika bingung".')]);
+        return;
+      }
+      const maxTokens = parseInt(params[0]);
+      if (![60, 150, 200].includes(maxTokens)) {
+        await Promise.all([msg.react('❌'), chat.sendMessage('Nilai tidak valid untuk <value>. Silakan gunakan 60, 150, atau 200, ketik /menu jika bingung.')]);
+        return;
+      }
+      const text = params.slice(1).join(' ');
+      const summary = await summarizeText(maxTokens, text);
+      await Promise.all([msg.react('📝'), chat.sendMessage(summary)]);
+    } else if (msg.hasMedia && msg.body.startsWith('/sticker')) {
       await Promise.all([msg.react('👌'), msg.reply('Foto sedang diproses...')]);
       const media = await msg.downloadMedia();
       await chat.sendMessage(media, {
@@ -81,11 +82,10 @@ client.on('message', async (msg) => {
         stickerAuthor: 'StickerPack by RoboGPT',
       });
     } else if (chat.isGroup && msg.body === '/tagall') {
-      const participants = await chat.participants;
-      const taggedUserNames = participants.map((participant) => `@${participant.id.user}`);
-      const taggedUserMessage = taggedUserNames.join(' ');
-
-      await Promise.all([msg.react('👥'), chat.sendMessage(taggedUserMessage)]);
+      const participants = await chat.participants.getAll();
+      const mentions = participants.map((participant) => client.getContactById(participant.id._serialized));
+      const mentionString = mentions.map((contact) => `@${contact.number}`).join(' ');
+      await chat.sendMessage(mentionString);
     } else if (chat.isGroup && msg.body.startsWith('/ask ')) {
       const question = msg.body.slice(questionOffset);
       const reply = await generateResponse(question);
@@ -96,7 +96,7 @@ client.on('message', async (msg) => {
       let formattedHistory = introduction;
       for (const msg of history) {
         const sender = msg.fromMe ? '' : msg.author || 'Friend';
-        formattedHistory += `${msg.body}\n`; //${sender}: 
+        formattedHistory += `${msg.body}\n`; //${sender}:
       }
       const reply = await generateResponse(formattedHistory);
       await chat.sendMessage(reply);
