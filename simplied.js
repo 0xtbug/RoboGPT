@@ -61,12 +61,12 @@ client.on('message', async (msg) => {
     } else if (msg.body.startsWith('/summarize ')) {
         const params = msg.body.slice('/summarize '.length).split(' ');
         if (params.length < 2) {
-          await Promise.all([msg.react('❌'), chat.sendMessage('Format perintah tidak valid. Harap gunakan "/summarize <nilai> <teks>".')]);
+          await Promise.all([msg.react('❌'), chat.sendMessage('Format perintah tidak valid. Harap gunakan "/summarize <nilai> <teks>, ketik /menu jika bingung".')]);
           return;
         }
         const maxTokens = parseInt(params[0]);
         if (![60, 150, 200].includes(maxTokens)) {
-          await Promise.all([msg.react('❌'), chat.sendMessage('Nilai tidak valid untuk <value>. Silakan gunakan 60, 150, atau 200.')]);
+          await Promise.all([msg.react('❌'), chat.sendMessage('Nilai tidak valid untuk <value>. Silakan gunakan 60, 150, atau 200, ketik /menu jika bingung.')]);
           return;
         }
         const text = params.slice(1).join(' ');
