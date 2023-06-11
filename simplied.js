@@ -53,7 +53,7 @@ client.on('message', async (msg) => {
     const chat = await msg.getChat();
 
     if (msg.body === '/menu') {
-      const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan /ask <pertanyaan>\n\n/sticker : Kirimkan foto dengan /sticker untuk dikonversi menjadi stiker\n\n/summarize : Untuk merangkum teks, berita, laporan, dll. Gunakan /summarize <value> <teks>\nvalue setting : 60 = Pendek, 120 = Medium, 200 = Panjang\n\n/donasi : Donasi Anda sangat membantu bagi saya!`;
+      const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan /ask <pertanyaan>\n\n/sticker : Kirimkan foto dengan /sticker untuk dikonversi menjadi stiker\n\n/summarize : Untuk merangkum teks, berita, laporan, dll. Gunakan /summarize <value> <teks>\nvalue setting : 60 = Pendek, 150 = Medium, 200 = Panjang\n\n/donasi : Donasi Anda sangat membantu bagi saya!`;
       await Promise.all([msg.react('👋'), chat.sendMessage(menuReply)]);
     } else if (msg.body === '/donasi') {
       const donationReply = `Berapapun donasinya akan saya terima!, terima kasih 😊\n\nOVO: 089650572376\nDANA: 089650572376`;
@@ -80,6 +80,13 @@ client.on('message', async (msg) => {
         stickerName: 'RoboGPT',
         stickerAuthor: 'StickerPack by RoboGPT',
       });
+    } else if (chat.isGroup && msg.body.startsWith('/tagall')) {
+        const participants = await chat.participants;
+        const taggedUsers = participants.filter((participant) => participant.id._serialized !== client.user.id._serialized);
+        const taggedUserNames = taggedUsers.map((participant) => `@${participant.id.user}`);
+        const taggedUserMessage = taggedUserNames.join(' ');
+  
+        await Promise.all([msg.react('👥'), chat.sendMessage(taggedUserMessage)]);
     } else if (chat.isGroup && msg.body.startsWith('/ask ')) {
       const question = msg.body.slice(questionOffset);
       const reply = await generateResponse(question);
