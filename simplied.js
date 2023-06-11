@@ -1,6 +1,6 @@
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const { generateResponse, summarizeText, transcribeVoiceMessage } = require('./simplied-gpt.js');
+const { generateResponse, summarizeText } = require('./simplied-gpt.js');
 const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
 const dotenv = require('dotenv');
 
@@ -51,22 +51,18 @@ client.on('message', async (msg) => {
   try {
     console.log(`MESSAGE RECEIVED ${msg.body}`);
     const chat = await msg.getChat();
-    if (msg.hasMedia && msg.type === 'audio') {
-        await Promise.all([msg.react('🎙️'), msg.reply('Transcribing audio...')]);
-        const media = await msg.downloadMedia();
-        const filePath = `./audio/${msg.id}.${msg.mimetype.split('/')[1]}`;
-        fs.writeFileSync(filePath, media);
-        const transcription = await transcribeVoiceMessage(filePath);
-        await chat.sendMessage(transcription);
-    }else if (msg.body === '/menu') {
-      const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan parameter /ask <pertanyaan>\n/sticker : Mengirimkan foto untuk dikonversi menjadi stiker\n/summarize : Untuk merangkum teks yang diberikan. Gunakan /summarize <teks>\n/donasi : Donasi Anda sangat membantu bagi saya!`;
+
+    if (msg.body === '/menu') {
+      const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan /ask <pertanyaan>\n/sticker : Kirimkan foto dengan /sticker untuk dikonversi menjadi stiker\n/summarize : Gunakan /summarize <value> <teks> Untuk merangkum teks, berita,dll.\nValue setting :\n 60 = Pendek, 120 = Medium, 200 = Panjang\n/donasi : Donasi Anda sangat membantu bagi saya!`;
       await Promise.all([msg.react('👋'), chat.sendMessage(menuReply)]);
     } else if (msg.body === '/donasi') {
       const donationReply = `Berapapun donasinya akan saya terima!, terima kasih 😊\n\nOVO: 089650572376\nDANA: 089650572376`;
       await Promise.all([msg.react('❤️'), chat.sendMessage(donationReply)]);
     } else if (msg.body.startsWith('/summarize ')) {
-      const text = msg.body.slice('/summarize '.length);
-      const summary = await summarizeText(text);
+      const params = msg.body.slice('/summarize '.length).split(' ');
+      const maxTokens = parseInt(params[0]);
+      const text = params.slice(1).join(' ');
+      const summary = await summarizeText(maxTokens, text);
       await Promise.all([msg.react('📝'), chat.sendMessage(summary)]);
     } else if (msg.hasMedia && msg.body.startsWith('/sticker')) {
       await Promise.all([msg.react('👌'), msg.reply('Foto sedang diproses...')]);
