@@ -51,7 +51,7 @@ client.on('message', async (msg) => {
   try {
     console.log(`MESSAGE RECEIVED ${msg.body}`);
     const chat = await msg.getChat();
-    if (msg.type === 'audio') {
+    if (msg.hasMedia && msg.type === 'audio') {
         await Promise.all([msg.react('🎙️'), msg.reply('Transcribing audio...')]);
         const media = await msg.downloadMedia();
         const filePath = `./audio/${msg.id}.${msg.mimetype.split('/')[1]}`;
