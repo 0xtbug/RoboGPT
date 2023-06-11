@@ -60,16 +60,19 @@ client.on('message', async (msg) => {
       await Promise.all([msg.react('❤️'), chat.sendMessage(donationReply)]);
     } else if (msg.body.startsWith('/summarize ')) {
         const params = msg.body.slice('/summarize '.length).split(' ');
-        if (params.length > 1) {
-          const maxTokens = parseInt(params[0]);
-          const text = params.slice(1).join(' ');
-          const summary = await summarizeText(maxTokens, text);
-          await Promise.all([msg.react('📝'), chat.sendMessage(summary)]);
-        } else {
-          const errorReply = 'Nilai tidak diberikan. Gunakan /summarize <value> <teks> untuk merangkum teks.';
-          await Promise.all([msg.react('❌'), chat.sendMessage(errorReply)]);
-        }      
-    } else if (msg.hasMedia && msg.body.startsWith('/sticker')) {
+        if (params.length < 2) {
+          await Promise.all([msg.react('❌'), chat.sendMessage('Format perintah tidak valid. Harap gunakan "/summarize <nilai> <teks>".')]);
+          return;
+        }
+        const maxTokens = parseInt(params[0]);
+        if (![60, 150, 200].includes(maxTokens)) {
+          await Promise.all([msg.react('❌'), chat.sendMessage('Nilai tidak valid untuk <value>. Silakan gunakan 60, 150, atau 200.')]);
+          return;
+        }
+        const text = params.slice(1).join(' ');
+        const summary = await summarizeText(maxTokens, text);
+        await Promise.all([msg.react('📝'), chat.sendMessage(summary)]);
+      } else if (msg.hasMedia && msg.body.startsWith('/sticker')) {
       await Promise.all([msg.react('👌'), msg.reply('Foto sedang diproses...')]);
       const media = await msg.downloadMedia();
       await chat.sendMessage(media, {
