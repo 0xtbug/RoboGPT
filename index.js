@@ -1,4 +1,5 @@
 const qrcode = require('qrcode-terminal');
+const fs = require('fs');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const { generateResponse, summarizeText, drawGpt, transcribeAudio } = require('./simplied-gpt.js');
 const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
@@ -141,6 +142,7 @@ client.on('message', async (msg) => {
 
         // Remove the temporary audio file
         fs.unlinkSync(filename);
+        return;
       }
     // handle /ask without a question in group chat
     else if (chat.isGroup && msg.body === '/ask') {

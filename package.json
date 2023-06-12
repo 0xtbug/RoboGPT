@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "fs": "^0.0.1-security",
     "dotenv": "^16.0.3",
     "openai": "^3.2.1",
     "pm2": "^5.2.0",
