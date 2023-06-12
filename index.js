@@ -1,7 +1,7 @@
 const qrcode = require('qrcode-terminal');
 const dotenv = require('dotenv');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
-const { generateResponse, summarizeText, drawGpt } = require('./function.js');
+const { generateResponse, summarizeText, drawGpt, fetchChatHistory } = require('./function.js');
 const { handleVoice } = require('./utils/audioToText.js');
 
 dotenv.config();
@@ -156,7 +156,8 @@ client.on('message', async (msg) => {
     else if (isPrivateChat && msg.body === '/tagall') {
         await Promise.all([msg.react('❌'), chat.sendMessage('Command /tagall hanya dapat digunakan dalam grup.')]);
     }else {
-        const reply = await generateResponse();
+        const history = await fetchChatHistory()
+        const reply = await generateResponse(history);
         await chat.sendMessage(reply);
       }
     } catch (error) {

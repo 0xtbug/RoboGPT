@@ -14,20 +14,6 @@ const openai = new OpenAIApi(configuration);
 // Function to generate a response based on chat history
 const generateResponse = async (chat) => {
   try {
-    // Fetch chat history
-    const historyLimit = parseInt(process.env.HISTORY_LIMIT);
-    const history = await chat.fetchMessages({ limit: historyLimit });
-
-    // Create an introduction
-    const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
-
-    // Format chat history
-    let formattedHistory = introduction;
-    for (const msg of history) {
-      const sender = msg.fromMe ? '' : msg.author || 'Friend';
-      formattedHistory += `${msg.body}\n`; // ${sender}:
-    }
-
     // Use the OpenAI API to create a completion based on the formatted chat history
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
@@ -47,6 +33,20 @@ const generateResponse = async (chat) => {
       console.log(`Error: ${error.message}`);
     }
   }
+};
+
+// Function to fetch chat history and format it
+const fetchChatHistory = async (historyLimit) => {
+  // Fetch chat history
+  const historyLimit = process.env.HISTORY_LIMIT;
+  const history = await chat.fetchMessages({ limit: historyLimit });
+  const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
+  let formattedHistory = introduction;
+  for (const msg of history) {
+    const sender = msg.fromMe ? '' : msg.author || 'Friend';
+    formattedHistory += `${msg.body}\n`; //${sender}:
+  }
+  return formattedHistory;
 };
 
 // Function to generate an image using DALL-E
@@ -98,4 +98,4 @@ const summarizeText = async (maxTokens, text) => {
   }
 };
 
-module.exports = { generateResponse, summarizeText, drawGpt };
+module.exports = { generateResponse, summarizeText, drawGpt, fetchChatHistory };
