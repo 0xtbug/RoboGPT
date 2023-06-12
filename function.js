@@ -12,12 +12,25 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 // Function to generate a response based on chat history
-const generateResponse = async (chatHistory) => {
+const generateResponse = async (chat) => {
   try {
-    // Use the OpenAI API to create a completion based on the chat history
+    // Fetch chat history
+    const history = await chat.fetchMessages({ limit: process.env.HISTORY_LIMIT });
+
+    // Create an introduction
+    const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
+
+    // Format chat history
+    let formattedHistory = introduction;
+    for (const msg of history) {
+      const sender = msg.fromMe ? '' : msg.author || 'Friend';
+      formattedHistory += `${msg.body}\n`; // ${sender}:
+    }
+
+    // Use the OpenAI API to create a completion based on the formatted chat history
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: chatHistory,
+      prompt: formattedHistory,
       max_tokens: 300, // This can be changed depending on how long you want the response to be
     });
 

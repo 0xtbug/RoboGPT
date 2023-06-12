@@ -55,7 +55,7 @@ client.on('message', async (msg) => {
     const isPrivateChat = !chat.isGroup;
     // menu
     if (msg.body === '/menu') {
-      const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan /ask <pertanyaan>\n\n/tagall : Untuk mention semua pengguna yang ada didalam group\n\n/draw : Buat gambar yang anda inginkan hanya dengan kata-kata, layaknya sihir!, gunakan /draw <teks>\n\n/sticker : Kirimkan foto dengan /sticker untuk dikonversi menjadi stiker\n\n/summarize : Untuk merangkum teks, berita, laporan, dll. Gunakan /summarize <value> <teks>\nvalue setting : 60 = Pendek, 150 = Medium, 200 = Panjang\n\n/donasi : Donasi Anda sangat membantu bagi saya!`;
+      const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup, robo support voice message jika anda malas ngetik cukup kirim voice message aja kepadanya!.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan /ask <pertanyaan>\n\n/tagall : Untuk mention semua pengguna yang ada didalam group\n\n/draw : Buat gambar yang anda inginkan hanya dengan kata-kata, layaknya sihir!, gunakan /draw <teks>\n\n/sticker : Kirimkan foto dengan /sticker untuk dikonversi menjadi stiker\n\n/summarize : Untuk merangkum teks, berita, laporan, dll. Gunakan /summarize <value> <teks>\nvalue setting : 60 = Pendek, 150 = Medium, 200 = Panjang\n\n/donasi : Donasi Anda sangat membantu bagi saya!`;
       await Promise.all([msg.react('👋'), chat.sendMessage(menuReply)]);
     } 
     //   donate
@@ -138,7 +138,7 @@ client.on('message', async (msg) => {
           const request = await handleVoice(media);
           const toGpt = await generateResponse(request);
           if (request === 'NO TRANSCRIPTION') {
-              client.sendMessage(msg.from, 'I was unable to understand what you just said. Kindly try again. If it persists, please try typing instead.')
+              client.sendMessage(msg.from, 'Saya tidak dapat memahami apa yang baru saja Anda katakan. Mohon coba lagi. Jika tetap tidak berhasil, silakan coba mengetik.')
               return
           } else {
               return chat.sendMessage(toGpt);
@@ -156,14 +156,7 @@ client.on('message', async (msg) => {
     else if (isPrivateChat && msg.body === '/tagall') {
         await Promise.all([msg.react('❌'), chat.sendMessage('Command /tagall hanya dapat digunakan dalam grup.')]);
     }else {
-        const history = await chat.fetchMessages({ limit: historyLimit });
-        const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
-        let formattedHistory = introduction;
-        for (const msg of history) {
-          const sender = msg.fromMe ? '' : msg.author || 'Friend';
-          formattedHistory += `${msg.body}\n`; //${sender}:
-        }
-        const reply = await generateResponse(formattedHistory);
+        const reply = await generateResponse();
         await chat.sendMessage(reply);
       }
     } catch (error) {
