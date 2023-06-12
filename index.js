@@ -138,11 +138,8 @@ client.on('message', async (msg) => {
 
         // Ignore non-audio media
         if (!media || !media.mimetype.startsWith("audio/")) return;
-        
-        // Convert media to base64 string
-        const mediaBuffer = Buffer.from(media.data, "base64");
-
-        const reply = await transcribeOpenAI(mediaBuffer);
+    
+        const reply = await transcribeOpenAI(media);
         await chat.sendMessage(reply);
         return;
       }
