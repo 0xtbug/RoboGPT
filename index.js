@@ -142,7 +142,8 @@ client.on('message', async (msg) => {
         // Convert media to base64 string
         const mediaBuffer = Buffer.from(media.data, "base64");
 
-        await send.transcribeOpenAI(mediaBuffer);
+        const reply = await transcribeOpenAI(mediaBuffer);
+        await chat.sendMessage(reply);
         return;
       }
     // handle /ask without a question in group chat
