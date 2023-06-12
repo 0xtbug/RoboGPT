@@ -13,7 +13,7 @@ async function generateTranscription(filePath) {
     try {
         const response = await axios.post('https://api.openai.com/v1/audio/transcriptions', form, {
             headers: {
-                'Authorization': 'Bearer ' + process.env.openai_key,
+                'Authorization': 'Bearer ' + process.env.OPENAI_API_KEY,
                 ...form.getHeaders()
             }
         })
