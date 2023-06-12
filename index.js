@@ -125,7 +125,7 @@ client.on('message', async (msg) => {
         const reply = await MessageMedia.fromUrl(media);
         await Promise.all([msg.react('✅'), chat.sendMessage(reply, {caption: "your image"})]);
       } 
-    // group
+    // group ask
     else if (chat.isGroup && msg.body.startsWith('/ask ')) {
         const question = msg.body.slice(questionOffset);
         const reply = await generateResponse(question);
@@ -136,11 +136,12 @@ client.on('message', async (msg) => {
       const media = await msg.downloadMedia();
         if (media.mimetype === 'audio/ogg; codecs=opus') {
           const request = await handleVoice(media);
+          const toGpt = await generateResponse(request);
           if (request === 'NO TRANSCRIPTION') {
               client.sendMessage(msg.from, 'I was unable to understand what you just said. Kindly try again. If it persists, please try typing instead.')
               return
           } else {
-              return chat.sendMessage(request);
+              return chat.sendMessage(toGpt);
           }
         }
       }
