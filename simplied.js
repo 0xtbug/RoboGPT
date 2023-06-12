@@ -36,7 +36,7 @@ client.on('qr', (qr) => {
 });
 
 client.on('authenticated', () => {
-  console.log(`✓ Authenticated!`);
+  console.log('✓ Authenticated!');
 });
 
 client.on('auth_failure', (msg) => {
@@ -55,13 +55,13 @@ client.on('message', async (msg) => {
     if (msg.body === '/menu') {
       const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan /ask <pertanyaan>\n\n/tagall : Untuk mention semua pengguna yang ada didalam group\n\n/sticker : Kirimkan foto dengan /sticker untuk dikonversi menjadi stiker\n\n/summarize : Untuk merangkum teks, berita, laporan, dll. Gunakan /summarize <value> <teks>\nvalue setting : 60 = Pendek, 150 = Medium, 200 = Panjang\n\n/donasi : Donasi Anda sangat membantu bagi saya!`;
       await Promise.all([msg.react('👋'), chat.sendMessage(menuReply)]);
-    
-    } //   donate
+    } 
+    //   donate
     else if (msg.body === '/donasi') {
       const donationReply = `Berapapun donasinya akan saya terima!, terima kasih 😊\n\nOVO: 089650572376\nDANA: 089650572376`;
       await Promise.all([msg.react('❤️'), chat.sendMessage(donationReply)]);
-    
-    } //   summarize
+    } 
+    //   summarize
     else if (msg.body.startsWith('/summarize ')) {
       const params = msg.body.slice('/summarize '.length).split(' ');
       if (params.length < 2) {
@@ -76,8 +76,8 @@ client.on('message', async (msg) => {
       const text = params.slice(1).join(' ');
       const summary = await summarizeText(maxTokens, text);
       await Promise.all([msg.react('📝'), chat.sendMessage(summary)]);
-    
-    } //   sticker
+    } 
+    //   sticker
     else if (msg.hasMedia && msg.body.startsWith('/sticker')) {
       await Promise.all([msg.react('👌'), msg.reply('Foto sedang diproses...')]);
       const media = await msg.downloadMedia();
@@ -86,8 +86,8 @@ client.on('message', async (msg) => {
         stickerName: 'RoboGPT',
         stickerAuthor: 'StickerPack by RoboGPT',
       });
-   
-     }  //   tagall
+     }  
+     //   tagall
      else if (chat.isGroup && msg.body === '/tagall') {
         // i can't fix 😵
         // const sender = await client.getParticipant(msg.author);
@@ -103,22 +103,24 @@ client.on('message', async (msg) => {
           text += `@${participant.id.user} `;
         }
         await Promise.all([msg.react('👥'), chat.sendMessage(text, { mentions })]);
-    } // ping
+    } 
     else if (msg.body === '/ping') {
         const startTime = Date.now();
-        console.log(`[!] Pinged\nS: ${msg.timestamp}\nR: ${startTime}`);
+        const serverTime = new Date().toLocaleString();
+        console.log(`[!] Pinged\nS: ${msg.timestamp}\nR: ${startTime}\nServer Time: ${serverTime}`);
         const response = await msg.reply("Pinging...");
         const endTime = Date.now();
         console.log(`E: ${endTime}`);
         const chat = await response.getChat();
-        await chat.sendMessage(`🏓 Pong! ${(endTime - startTime) / 1000}s`);
+        await chat.sendMessage(`🏓 Pong! ${(endTime - startTime) / 1000}s\nServer Time: ${serverTime}`);
       }
     // group
     else if (chat.isGroup && msg.body.startsWith('/ask ')) {
       const question = msg.body.slice(questionOffset);
       const reply = await generateResponse(question);
       await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
-    } // private 
+    } 
+    // private
     else if (!chat.isGroup && !msg.body.startsWith('/ask ')) {
       const history = await chat.fetchMessages({ limit: historyLimit });
       const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
