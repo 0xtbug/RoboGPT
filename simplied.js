@@ -118,6 +118,9 @@ client.on('message', async (msg) => {
       }
     // group
     else if (chat.isGroup && msg.body.startsWith('/ask ')) {
+        if (msg.body.startsWith('/ask')) {
+            await Promise.all([msg.react('😡'), chat.sendMessage('Harap gunakan /ask <pertanyaan>!, contoh: /ask kenapa laut berwarna biru')]);
+        }
       const question = msg.body.slice(questionOffset);
       const reply = await generateResponse(question);
       await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
