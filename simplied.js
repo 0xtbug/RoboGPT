@@ -51,6 +51,8 @@ client.on('message', async (msg) => {
   try {
     console.log(`MESSAGE RECEIVED ${msg.body}`);
     const chat = await msg.getChat();
+    // Check if the message is in a private chat
+    const isPrivateChat = !chat.isGroup;
     // menu
     if (msg.body === '/menu') {
       const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan /ask <pertanyaan>\n\n/tagall : Untuk mention semua pengguna yang ada didalam group\n\n/sticker : Kirimkan foto dengan /sticker untuk dikonversi menjadi stiker\n\n/summarize : Untuk merangkum teks, berita, laporan, dll. Gunakan /summarize <value> <teks>\nvalue setting : 60 = Pendek, 150 = Medium, 200 = Panjang\n\n/donasi : Donasi Anda sangat membantu bagi saya!`;
@@ -116,12 +118,17 @@ client.on('message', async (msg) => {
       }
     // group
     else if (chat.isGroup && msg.body.startsWith('/ask ')) {
+    // Check if the message is in a private chat
+      if (isPrivateChat) {
+        await Promise.all([msg.react('❌'), chat.sendMessage('Command ini hanya dapat digunakan di group chat.')]);
+        return;
+      }
       const question = msg.body.slice(questionOffset);
       const reply = await generateResponse(question);
       await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
     } 
-    // private
-    else if (!chat.isGroup && !msg.body.startsWith('/ask ')) {
+    // private chat
+    else if (isPrivateChat) {
       const history = await chat.fetchMessages({ limit: historyLimit });
       const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
       let formattedHistory = introduction;
