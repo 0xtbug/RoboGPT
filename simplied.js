@@ -112,7 +112,7 @@ client.on('message', async (msg) => {
         const endTime = Date.now();
         console.log(`E: ${endTime}`);
         const chat = await response.getChat();
-        await chat.sendMessage(`🏓 Pong! ${(endTime - startTime) / 1000}s\nServer Time: ${serverTime}`);
+        await chat.sendMessage(`🏓 Pong! ${(endTime - startTime) / 1000}s\n⌚ Server Time: ${serverTime}`);
       }
     // group
     else if (chat.isGroup && msg.body.startsWith('/ask ')) {
