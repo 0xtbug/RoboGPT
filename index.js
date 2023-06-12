@@ -145,7 +145,7 @@ client.on('message', async (msg) => {
         const randomString = crypto.randomBytes(6).toString('hex');
         const fileName = `${Date.now()}_${randomString}.ogg`;
         const filePath = path.resolve(__dirname, 'audio', fileName);
-        await fs.promises.writeFile(filePath, buffer);
+        await fs.promises.writeFile(filePath, media);
         const fileogg = await convertAudio(filePath);
         const final = await transcribeAudio(fileogg);
         await send.sendMessage(final);
