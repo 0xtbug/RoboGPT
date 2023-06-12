@@ -1,15 +1,5 @@
 const { Configuration, OpenAIApi } = require("openai");
-const fs = require('fs');
-const axios = require('axios');
-const FormData = require('form-data');
 const dotenv = require('dotenv');
-const os = require('os');
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
-
-function randomUUID() {
-  return uuidv4();
-}
 
 dotenv.config();
 
@@ -94,78 +84,4 @@ const summarizeText = async (maxTokens, text) => {
   }
 };
 
-// transcribeAudio
-
-async function transcribeOpenAI(audioBuffer) {
-  const url = 'https://api.openai.com/v1/audio/transcriptions';
-  let language = "";
-
-  const tempdir = os.tmpdir();
-  const oggPath = path.join(tempdir, randomUUID() + ".ogg");
-  const wavFilename = randomUUID() + ".wav";
-  const wavPath = path.join(tempdir, wavFilename);
-  fs.writeFileSync(oggPath, audioBuffer);
-  try {
-    await convertOggToWav(oggPath, wavPath);
-  } catch (e) {
-    fs.unlinkSync(oggPath);
-    return {
-      text: "",
-      language
-    };
-  }
-
-  // FormData
-  const formData = new FormData();
-  formData.append("file", new File([blobFromSync(wavPath)], wavFilename, { type: "audio/wav" }));
-  formData.append("model", "whisper-1");
-
-  const headers = new Headers();
-  headers.append("Authorization", `Bearer ${process.env.OPENAI_API_KEY}`);
-
-  // Request options
-  const options = {
-    method: "POST",
-    body: formData,
-    headers
-  };
-
-  let response;
-  try {
-    response = await fetch(url, options);
-  } catch (e) {
-    console.error(e);
-  } finally {
-    fs.unlinkSync(oggPath);
-    fs.unlinkSync(wavPath);
-  }
-
-  if (!response || response.status != 200) {
-    console.error(response);
-    return {
-      text: "",
-      language: language
-    };
-  }
-
-  const transcription = await response.json();
-  return {
-    text: transcription.text,
-    language
-  };
-}
-
-async function convertOggToWav(oggPath, wavPath) {
-  return new Promise((resolve, reject) => {
-    ffmpeg(oggPath)
-      .toFormat("wav")
-      .outputOptions("-acodec pcm_s16le")
-      .output(wavPath)
-      .on("end", () => resolve())
-      .on("error", (err) => reject(err))
-      .run();
-  });
-}
-
-
-module.exports = { generateResponse, summarizeText, drawGpt, transcribeOpenAI };
+module.exports = { generateResponse, summarizeText, drawGpt };

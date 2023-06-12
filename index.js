@@ -1,9 +1,8 @@
 const qrcode = require('qrcode-terminal');
-const path = require("path");
 const dotenv = require('dotenv');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
-const { generateResponse, summarizeText, drawGpt, transcribeOpenAI } = require('./function.js');
-// const { convertAudio } = require('./utils/convert-audio.js');
+const { generateResponse, summarizeText, drawGpt } = require('./function.js');
+const { handleVoice } = require('./utils/audioToText.js');
 
 dotenv.config();
 
@@ -134,17 +133,16 @@ client.on('message', async (msg) => {
       } 
       // handle voice messages
     else if (msg.hasMedia) {
-        const media = await msg.downloadMedia();
-
-        // Ignore non-audio media
-        if (!media || !media.mimetype.startsWith("audio/")) return;
-        
-        // Convert media to base64 string
-        const mediaBuffer = Buffer.from(media.data);
-
-        const reply = await transcribeOpenAI(mediaBuffer);
-        await chat.sendMessage(reply);
-        return;
+      const media = await message.downloadMedia();
+        if (media.mimetype === 'audio/ogg; codecs=opus') {
+          const request = await handleVoice(media)
+          if (request === 'NO TRANSCRIPTION') {
+              client.sendMessage(msg.from, 'I was unable to understand what you just said. Kindly try again. If it persists, please try typing instead.')
+              return
+          } else {
+              return request
+          }
+        }
       }
     // handle /ask without a question in group chat
     else if (chat.isGroup && msg.body === '/ask') {
