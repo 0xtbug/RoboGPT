@@ -5,6 +5,11 @@ const FormData = require('form-data');
 const dotenv = require('dotenv');
 const os = require('os');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+
+function randomUUID() {
+  return uuidv4();
+}
 
 dotenv.config();
 
