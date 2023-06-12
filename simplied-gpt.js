@@ -40,7 +40,7 @@ const drawGpt = async (text) => {
     const completion = await openai.createImage({
       prompt: text,
       n: 1,
-      size: '512x512'
+      size: "512x512",
   });
   const drawing = completion.data.data[0].url;
   return drawing;
