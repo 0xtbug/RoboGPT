@@ -91,10 +91,6 @@ client.on('message', async (msg) => {
      }  
      //   tagall
      else if (chat.isGroup && msg.body === '/tagall') {
-        if (isPrivateChat) {
-            await Promise.all([msg.react('❌'), chat.sendMessage('Command /tagall hanya dapat digunakan dalam grup.')]);
-            return;
-        }
         // i can't fix 😵
         // const sender = await client.getParticipant(msg.author);
         // if (!sender.isAdmin) {
