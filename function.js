@@ -33,7 +33,7 @@ const drawGpt = async (text) => {
   try {
     const image = await openai.createImage({
       prompt: text,
-      n: 1,
+      n: 2,
       size: "512x512"
     });
     const imgUrl = image.data.data[0].url;
