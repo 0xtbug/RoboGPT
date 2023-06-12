@@ -1,10 +1,11 @@
 const qrcode = require('qrcode-terminal');
+const crypto = require('crypto');
+const path = require("path");
+const dotenv = require('dotenv');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const { generateResponse, summarizeText, drawGpt, transcribeAudio } = require('./function.js');
 const { convertAudio } = require('./utils/convert-audio.js');
 const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
-const path = require("path");
-const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -140,7 +141,10 @@ client.on('message', async (msg) => {
         // Ignore non-audio media
         if (!media || !media.mimetype.startsWith("audio/")) return;
 
-        const filePath = path.resolve(__dirname, "audio", `1.ogg`);
+        const randomString = crypto.randomBytes(6).toString('hex');
+        const fileName = `${Date.now()}_${randomString}.ogg`;
+        const filePath = path.resolve(__dirname, 'audio', fileName);
+        await fs.promises.writeFile(filePath, buffer);
         const fileogg = await convertAudio(filePath);
         const final = await transcribeAudio(fileogg);
         await send.sendMessage(final);

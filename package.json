@@ -20,7 +20,8 @@
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "axios": "^1.4.0",
     "form-data": "^4.0.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "crypto": "^1.0.1"
   },
   "devDependencies": {},
   "repository": {
