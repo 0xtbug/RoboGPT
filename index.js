@@ -82,7 +82,7 @@ client.on('message', async (msg) => {
     } 
     //   sticker
     else if (msg.hasMedia && msg.body.startsWith('/sticker')) {
-      await Promise.all([msg.react('👌'), msg.reply('Foto sedang diproses...')]);
+      await Promise.all([msg.react('👌'), msg.reply('Sedang diproses...')]);
       const media = await msg.downloadMedia();
       await chat.sendMessage(media, {
         sendMediaAsSticker: true,
@@ -106,6 +106,7 @@ client.on('message', async (msg) => {
           text += `@${participant.id.user} `;
         }
         await Promise.all([msg.react('👥'), chat.sendMessage(text, { mentions })]);
+        await msg.delete(everyone);
     } 
     // ping
     else if (msg.body === '/ping') {
@@ -132,9 +133,9 @@ client.on('message', async (msg) => {
         await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
       } 
       // handle voice messages
-    else if (msg.isVoiceMessage) {
-        const audioData = await msg.downloadVoice();
-        const filename = `voice_message_${Date.now()}.wav`;
+    else if (msg.hasMedia) {
+        const audioData = await msg.downloadMedia();
+        const filename = `voice_message_${Date.now()}.ogg`;
         fs.writeFileSync(filename, audioData);
 
         const transcript = await transcribeAudio(filename);
