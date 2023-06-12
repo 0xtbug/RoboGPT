@@ -37,15 +37,15 @@ const generateResponse = async (chatHistory) => {
 
 const drawGpt = async (text) => {
   try {
-    const completion = await openai.createImage({
+    const image = await openai.createImage({
       prompt: text,
       n: 1,
-      size: "512x512"
+      size: "512x512",
+      response_format: "url"
   });
-  const imgUrl = completion.data.data[0].url;
-  const media = await MessageMedia.fromUrl(imgUrl);
+  const imgUrl = image.data.data[0].url;
 
-  return media;
+  return imgUrl;
   } catch (error) {
     // Catch specific errors if possible
     if (error.response && error.response.status) {
