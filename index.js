@@ -135,7 +135,7 @@ client.on('message', async (msg) => {
     else if (msg.hasMedia) {
       const media = await msg.downloadMedia();
         if (media.mimetype === 'audio/ogg; codecs=opus') {
-          const request = await handleVoice(media)
+          const request = await handleVoice(media);
           if (request === 'NO TRANSCRIPTION') {
               client.sendMessage(msg.from, 'I was unable to understand what you just said. Kindly try again. If it persists, please try typing instead.')
               return
