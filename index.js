@@ -1,4 +1,4 @@
-const { Client } = require('whatsapp-web.js');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const dotenv = require('dotenv');
 const { handleIncomingMessage } = require('./lib/whatsapp');
