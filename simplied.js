@@ -128,7 +128,7 @@ client.on('message', async (msg) => {
     } 
     // private chat
     else if (isPrivateChat) {
-        if (msg.body === '/ask' || msg.body.startsWith('/ask ') {
+        if (msg.body === '/ask' || msg.body.startsWith('/ask ')) {
             await Promise.all([msg.react('❌'), chat.sendMessage('Command /ask hanya dapat digunakan dalam grup.')]);
             return;   
         }
