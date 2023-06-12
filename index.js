@@ -136,7 +136,7 @@ client.on('message', async (msg) => {
     else if (msg.hasMedia) {
         const media = await msg.downloadMedia();
         // Ignore non-audio media
-		    if (!media || !media.mimetype.startsWith("audio/")) return;
+        if (!media || !media.mimetype.startsWith("audio/")) return;
         const filePath = path.resolve(__dirname, "audio", `1.ogg`);
         const fileogg = await convertAudio(filePath);
         const final = await transcribeAudio(fileogg);
