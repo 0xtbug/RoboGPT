@@ -5,6 +5,7 @@ dotenv.config();
 
 // Create a configuration object with API key
 const configuration = new Configuration({
+  organization: process.env.ORGANIZATION,
   apiKey: process.env.OPENAI_API_KEY,
 });
 
@@ -40,8 +41,7 @@ const drawGpt = async (text) => {
     const image = await openai.createImage({
       prompt: text,
       n: 1,
-      size: "512x512",
-      response_format: "url"
+      size: "512x512"
   });
   const imgUrl = image.data.data[0].url;
 
