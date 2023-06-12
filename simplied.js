@@ -118,35 +118,32 @@ client.on('message', async (msg) => {
       }
     // group
     else if (chat.isGroup && msg.body.startsWith('/ask ')) {
-        if (msg.body.startsWith('/ask')) {
-            await Promise.all([msg.react('😡'), chat.sendMessage('Harap gunakan /ask <pertanyaan>!, contoh: /ask kenapa laut berwarna biru')]);
+        if (msg.body === '/ask') {
+          await Promise.all([msg.react('😡'), chat.sendMessage('Harap gunakan /ask <pertanyaan>!, contoh: /ask kenapa laut berwarna biru')]);
+          return;
         }
-      const question = msg.body.slice(questionOffset);
-      const reply = await generateResponse(question);
-      await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
-    } 
+        const question = msg.body.slice(questionOffset);
+        const reply = await generateResponse(question);
+        await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
+      } 
     // private chat
-    else if (isPrivateChat) {
-        // check error
-        if (msg.body === '/ask' || msg.body.startsWith('/ask ')) {
-            await Promise.all([msg.react('❌'), chat.sendMessage('Command /ask hanya dapat digunakan dalam grup.')]);
-            return;   
-        }else if (msg.body === '/tagall') {
-            await Promise.all([msg.react('❌'), chat.sendMessage('Command /tagall hanya dapat digunakan dalam grup.')]);
-            return;
+    else if (isPrivateChat && (msg.body === '/ask' || msg.body.startsWith('/ask '))) {
+        await Promise.all([msg.react('❌'), chat.sendMessage('Command /ask hanya dapat digunakan dalam grup.')]);
+    } 
+    else if (isPrivateChat && msg.body === '/tagall') {
+        await Promise.all([msg.react('❌'), chat.sendMessage('Command /tagall hanya dapat digunakan dalam grup.')]);
+    }else {
+        const history = await chat.fetchMessages({ limit: historyLimit });
+        const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
+        let formattedHistory = introduction;
+        for (const msg of history) {
+          const sender = msg.fromMe ? '' : msg.author || 'Friend';
+          formattedHistory += `${msg.body}\n`; //${sender}:
         }
-
-      const history = await chat.fetchMessages({ limit: historyLimit });
-      const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
-      let formattedHistory = introduction;
-      for (const msg of history) {
-        const sender = msg.fromMe ? '' : msg.author || 'Friend';
-        formattedHistory += `${msg.body}\n`; //${sender}:
+        const reply = await generateResponse(formattedHistory);
+        await chat.sendMessage(reply);
       }
-      const reply = await generateResponse(formattedHistory);
-      await chat.sendMessage(reply);
+    } catch (error) {
+      await Promise.all([msg.react('❌'), console.error('Error handling message:', error)]);
     }
-  } catch (error) {
-    await Promise.all([msg.react('❌'), console.error('Error handling message:', error)]);
-  }
-});
+  });  
