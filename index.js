@@ -1,6 +1,6 @@
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const { generateResponse, summarizeText } = require('./simplied-gpt.js');
+const { generateResponse, summarizeText, drawGpt } = require('./simplied-gpt.js');
 const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
 const dotenv = require('dotenv');
 
@@ -106,6 +106,7 @@ client.on('message', async (msg) => {
         }
         await Promise.all([msg.react('👥'), chat.sendMessage(text, { mentions })]);
     } 
+    // ping
     else if (msg.body === '/ping') {
         const startTime = Date.now();
         const serverTime = new Date().toLocaleString();
@@ -116,6 +117,12 @@ client.on('message', async (msg) => {
         const chat = await response.getChat();
         await chat.sendMessage(`🏓 Pong! ${(endTime - startTime) / 1000}s\n⌚ Server Time: ${serverTime}`);
       }
+    // draw
+      else if (msg.body.startsWith('/draw ')) {
+        const media = await MessageMedia.fromUrl(drawing);
+        const reply = await drawGpt(media);
+        await Promise.all([msg.react('✅'), chat.sendMessage(message.from, reply, {caption: "your image"})]);
+      } 
     // group
     else if (chat.isGroup && msg.body.startsWith('/ask ')) {
         const question = msg.body.slice(questionOffset);

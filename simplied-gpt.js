@@ -35,6 +35,25 @@ const generateResponse = async (chatHistory) => {
   }
 };
 
+const drawGpt = async (text) => {
+  try {
+    const completion = await openai.createImage({
+      prompt: text,
+      n: 1,
+      size: '512x512'
+  });
+  const drawing = completion.data.data[0].url;
+  return drawing;
+  } catch (error) {
+    // Catch specific errors if possible
+    if (error.response && error.response.status) {
+      console.log(`Error ${error.response.status}: ${error.response.data.error.message}`);
+    } else {
+      console.log(`Error: ${error.message}`);
+    }
+  }
+};
+
 // Function to summarize text
 const summarizeText = async (maxTokens, text) => {
   try {
@@ -63,4 +82,4 @@ const summarizeText = async (maxTokens, text) => {
   }
 };
 
-module.exports = { generateResponse, summarizeText };
+module.exports = { generateResponse, summarizeText, drawGpt };
