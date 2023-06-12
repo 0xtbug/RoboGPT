@@ -1,5 +1,7 @@
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require('fs');
+const axios = require('axios');
+const FormData = require('form-data');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -57,26 +59,6 @@ const drawGpt = async (text) => {
   }
 };
 
-// Transcribe audio
-const transcribeAudio = async (filename) => {
-  try {
-  const transcript = await openai.createTranscription(
-    fs.createReadStream(filename),
-    "whisper-1"
-  );
-  const textAudio = transcript.data.text;
-
-  return textAudio;
-  } catch (error) {
-    // Catch specific errors if possible
-    if (error.response && error.response.status) {
-      console.log(`Error ${error.response.status}: ${error.response.data.error.message}`);
-    } else {
-      console.log(`Error: ${error.message}`);
-    }
-  }
-};
-
 // Function to summarize text
 const summarizeText = async (maxTokens, text) => {
   try {
@@ -103,6 +85,33 @@ const summarizeText = async (maxTokens, text) => {
       console.log(`Error: ${error.message}`);
     }
   }
+};
+
+// transcribeAudio
+const transcribeAudio = async (filePath) => {
+  const unixFilePath = filePath.substring(2).replace(/\\/g, '/');
+    let data = new FormData();
+    data.append('model', 'whisper-1');
+    data.append('file', fs.createReadStream(unixFilePath));
+    
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'https://api.openai.com/v1/audio/transcriptions',
+      headers: { 
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` , 
+        ...data.getHeaders()
+      },
+      data : data
+    };
+    
+    try {
+      const response = await axios(config);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
 };
 
 module.exports = { generateResponse, summarizeText, drawGpt, transcribeAudio };

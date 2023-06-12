@@ -1,7 +1,7 @@
 const qrcode = require('qrcode-terminal');
-const fs = require('fs');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
-const { generateResponse, summarizeText, drawGpt, transcribeAudio } = require('./simplied-gpt.js');
+const { generateResponse, summarizeText, drawGpt, transcribeAudio } = require('./function.js');
+const { convertAudio } = require('./utils/convert-audio.js');
 const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
 const dotenv = require('dotenv');
 
@@ -134,15 +134,21 @@ client.on('message', async (msg) => {
       } 
       // handle voice messages
     else if (msg.hasMedia) {
-        const audioData = await msg.downloadMedia('buffer');
-        const filename = `voice_message_${Date.now()}.ogg`;
-        fs.writeFileSync(filename, audioData);
+        const media = await msg.downloadMedia();
+        // Ignore non-audio media
+		    if (!media || !media.mimetype.startsWith("audio/")) return;
+        const filePath = path.resolve(__dirname, "audio", `1.ogg`);
+        const fileogg = await convertAudio(filePath);
+        const final = await transcribeAudio(fileogg);
+        await send.sendMessage(final);
+        // const filename = `voice_message_${Date.now()}.ogg`;
+        // fs.writeFileSync(filename, audioData);
 
-        const transcript = await transcribeAudio(filename);
-        await chat.sendMessage(transcript);
+        // const transcript = await transcribeAudio(filename);
+        // await chat.sendMessage(transcript);
 
-        // Remove the temporary audio file
-        fs.unlinkSync(filename);
+        // // Remove the temporary audio file
+        // fs.unlinkSync(filename);
         return;
       }
     // handle /ask without a question in group chat
