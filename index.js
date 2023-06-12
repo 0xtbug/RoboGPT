@@ -133,14 +133,14 @@ client.on('message', async (msg) => {
       } 
       // handle voice messages
     else if (msg.hasMedia) {
-      const media = await message.downloadMedia();
+      const media = await msg.downloadMedia();
         if (media.mimetype === 'audio/ogg; codecs=opus') {
           const request = await handleVoice(media)
           if (request === 'NO TRANSCRIPTION') {
               client.sendMessage(msg.from, 'I was unable to understand what you just said. Kindly try again. If it persists, please try typing instead.')
               return
           } else {
-              return request
+              return chat.sendMessage(request);
           }
         }
       }
