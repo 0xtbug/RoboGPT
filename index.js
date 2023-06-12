@@ -98,11 +98,17 @@ client.on('message', async (msg) => {
       }
       default: {
         if (isPrivateChat) {
-          await Promise.all([
-            msg.react('❌'),
-            chat.sendMessage('Command /ask hanya dapat digunakan dalam grup.')
-          ]);
+          const history = await chat.fetchMessages({ limit: historyLimit });
+          const formattedHistory = await introduction(history);
+          const reply = await generateResponse(formattedHistory);
+          await chat.sendMessage(reply);
         } else if (msg.body.startsWith('/ask ')) {
+            if (isPrivateChat) {
+              await Promise.all([
+                msg.react('❌'),
+                chat.sendMessage('Command /ask hanya dapat digunakan dalam grup.')
+              ]);
+            }
           const question = msg.body.slice(questionOffset);
           const reply = await generateResponse(question);
           await Promise.all([
@@ -125,10 +131,10 @@ client.on('message', async (msg) => {
             }
           }
         } else {
-          const history = await chat.fetchMessages({ limit: historyLimit });
-          const formattedHistory = await introduction(history);
-          const reply = await generateResponse(formattedHistory);
-          await chat.sendMessage(reply);
+          await Promise.all([
+            msg.react('❌'),
+            console.error('Error handling message:', error)
+          ]);
         }
         break;
       }
