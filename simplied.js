@@ -91,6 +91,10 @@ client.on('message', async (msg) => {
      }  
      //   tagall
      else if (chat.isGroup && msg.body === '/tagall') {
+        if (isPrivateChat) {
+            await Promise.all([msg.react('❌'), chat.sendMessage('Command /tagall hanya dapat digunakan dalam grup.')]);
+            return;
+        }
         // i can't fix 😵
         // const sender = await client.getParticipant(msg.author);
         // if (!sender.isAdmin) {
@@ -118,17 +122,14 @@ client.on('message', async (msg) => {
       }
     // group
     else if (chat.isGroup && msg.body.startsWith('/ask ')) {
-    // Check if the message is in a private chat
-      if (isPrivateChat) {
-        await Promise.all([msg.react('❌'), chat.sendMessage('Command ini hanya dapat digunakan di group chat.')]);
-        return;
-      }
       const question = msg.body.slice(questionOffset);
       const reply = await generateResponse(question);
       await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
     } 
     // private chat
-    else if (isPrivateChat && !msg.body.startsWith('/ask ')) {
+    else if (isPrivateChat && (msg.body === '/ask' || msg.body.startsWith('/ask '))) {
+      await Promise.all([msg.react('❌'), chat.sendMessage('Command /ask hanya dapat digunakan dalam grup.')]);
+
       const history = await chat.fetchMessages({ limit: historyLimit });
       const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
       let formattedHistory = introduction;
