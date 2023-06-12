@@ -106,7 +106,7 @@ client.on('message', async (msg) => {
           text += `@${participant.id.user} `;
         }
         await Promise.all([msg.react('👥'), chat.sendMessage(text, { mentions })]);
-        await msg.delete(everyone);
+        await msg.delete(true);
     } 
     // ping
     else if (msg.body === '/ping') {
@@ -134,7 +134,7 @@ client.on('message', async (msg) => {
       } 
       // handle voice messages
     else if (msg.hasMedia) {
-        const audioData = await msg.downloadMedia();
+        const audioData = await msg.downloadMedia('buffer');
         const filename = `voice_message_${Date.now()}.ogg`;
         fs.writeFileSync(filename, audioData);
 
