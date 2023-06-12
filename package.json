@@ -2,9 +2,9 @@
   "name": "whatsapp-chatbot",
   "version": "0.0.1",
   "description": "",
-  "main": "simplied.js",
+  "main": "index.js",
   "scripts": {
-    "start": "pm2 start simplied.js --deep-monitoring --attach --name gpt",
+    "start": "pm2 start index.js --deep-monitoring --attach --name gpt",
     "stop": "pm2 stop gpt"
   },
   "keywords": [],

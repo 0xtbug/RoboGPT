@@ -1,6 +1,6 @@
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const { generateResponse, summarizeText } = require('./simplied-gpt.js');
+const { generateResponse, summarizeText } = require('./lib/simplied-gpt.js');
 const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
 const dotenv = require('dotenv');
 
@@ -118,14 +118,14 @@ client.on('message', async (msg) => {
       }
     // group
     else if (chat.isGroup && msg.body.startsWith('/ask ')) {
-        if (msg.body === '/ask') {
-          await Promise.all([msg.react('😡'), chat.sendMessage('Harap gunakan /ask <pertanyaan>!, contoh: /ask kenapa laut berwarna biru')]);
-          return;
-        }
         const question = msg.body.slice(questionOffset);
         const reply = await generateResponse(question);
         await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
       } 
+    // handle /ask without a question in group chat
+    else if (chat.isGroup && msg.body === '/ask') {
+        await Promise.all([msg.react('❌'), chat.sendMessage('Anda harus menambahkan pertanyaan setelah "/ask". Contoh: "/ask Apa warna langit?"')]);
+    }
     // private chat
     else if (isPrivateChat && (msg.body === '/ask' || msg.body.startsWith('/ask '))) {
         await Promise.all([msg.react('❌'), chat.sendMessage('Command /ask hanya dapat digunakan dalam grup.')]);
