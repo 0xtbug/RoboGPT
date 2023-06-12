@@ -140,7 +140,7 @@ client.on('message', async (msg) => {
               client.sendMessage(msg.from, 'I was unable to understand what you just said. Kindly try again. If it persists, please try typing instead.')
               return
           } else {
-              return chat.sendMessage(request);
+              return;
           }
         }
       }

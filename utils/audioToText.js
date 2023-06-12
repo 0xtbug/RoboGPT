@@ -99,4 +99,4 @@ async function handleVoice({ mimetype, data }) {
     }
 }
 
-module.exports = handleVoice;
+module.exports = { handleVoice };
