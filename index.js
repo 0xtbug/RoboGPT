@@ -138,13 +138,20 @@ client.on('message', async (msg) => {
       // handle voice messages
     else if (msg.hasMedia) {
         const media = await msg.downloadMedia();
-        
+
         // Ignore non-audio media
         if (!media || !media.mimetype.startsWith("audio/")) return;
-
+        
         const randomString = crypto.randomBytes(6).toString('hex');
         const fileName = `${Date.now()}_${randomString}.ogg`;
-        const filePath = path.resolve(__dirname, 'audio', fileName);
+        const directoryPath = path.resolve(__dirname, 'audio');
+        const filePath = path.resolve(directoryPath, fileName);
+        
+        // Create the directory if it doesn't exist
+        if (!fs.existsSync(directoryPath)) {
+          fs.mkdirSync(directoryPath, { recursive: true });
+        }
+        
         await fs.promises.writeFile(filePath, media.data);
         const fileogg = await convertAudio(filePath);
         const final = await transcribeAudio(fileogg);
