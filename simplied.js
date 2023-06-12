@@ -128,7 +128,7 @@ client.on('message', async (msg) => {
       await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
     } 
     // private chat
-    else if (isPrivateChat) {
+    else if (isPrivateChat && !msg.body.startsWith('/ask ')) {
       const history = await chat.fetchMessages({ limit: historyLimit });
       const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
       let formattedHistory = introduction;
