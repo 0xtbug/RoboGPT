@@ -119,8 +119,8 @@ client.on('message', async (msg) => {
       }
     // draw
       else if (msg.body.startsWith('/draw ')) {
-        const media = await MessageMedia.fromUrl(drawing);
-        const reply = await drawGpt(media);
+        const text = msg.body.slice('/draw '.length);
+        const reply = await drawGpt(text);
         await Promise.all([msg.react('✅'), chat.sendMessage(message.from, reply, {caption: "your image"})]);
       } 
     // group

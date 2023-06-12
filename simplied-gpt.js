@@ -42,8 +42,10 @@ const drawGpt = async (text) => {
       n: 1,
       size: "512x512",
   });
-  const drawing = completion.data.data[0].url;
-  return drawing;
+  const imgUrl = completion.data.data[0].url;
+  const media = await MessageMedia.fromUrl(imgUrl);
+  
+  return media;
   } catch (error) {
     // Catch specific errors if possible
     if (error.response && error.response.status) {
