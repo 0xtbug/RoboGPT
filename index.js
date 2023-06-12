@@ -1,11 +1,9 @@
 const qrcode = require('qrcode-terminal');
-const crypto = require('crypto');
 const path = require("path");
 const dotenv = require('dotenv');
-const fs = require('fs');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
-const { generateResponse, summarizeText, drawGpt, transcribeAudio } = require('./function.js');
-const { convertAudio } = require('./utils/convert-audio.js');
+const { generateResponse, summarizeText, drawGpt, transcribeOpenAI } = require('./function.js');
+// const { convertAudio } = require('./utils/convert-audio.js');
 
 dotenv.config();
 
@@ -141,20 +139,10 @@ client.on('message', async (msg) => {
         // Ignore non-audio media
         if (!media || !media.mimetype.startsWith("audio/")) return;
         
-        // const randomString = crypto.randomBytes(6).toString('hex');
-        // const fileName = `${Date.now()}_${randomString}.ogg`;
-        const directoryPath = path.resolve(__dirname, 'audio');
-        const filePath = path.resolve(directoryPath, `1.ogg`);
-        
-        // Create the directory if it doesn't exist
-        if (!fs.existsSync(directoryPath)) {
-          fs.mkdirSync(directoryPath, { recursive: true });
-        }
-        
-        await fs.promises.writeFile(filePath, media.data);
-        const fileogg = await convertAudio(filePath);
-        const final = await transcribeAudio(fileogg);
-        await send.sendMessage(final);
+        // Convert media to base64 string
+        const mediaBuffer = Buffer.from(media.data, "base64");
+
+        await send.transcribeOpenAI(mediaBuffer);
         return;
       }
     // handle /ask without a question in group chat

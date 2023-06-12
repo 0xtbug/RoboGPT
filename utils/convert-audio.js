@@ -22,15 +22,14 @@ const convertAudio = (filePath, format = 'mp3') => {
       `${path.basename(filePath, path.extname(filePath))}.${formats[format].ext}`
     );
 
-    ffmpeg(filePath)
-      .audioCodec(formats[format].codec)
-      .audioBitrate('64k')
-      .format(formats[format].ext)
-      .output(outputPath)
-      .on('end', () => resolve(outputPath))
-      .on('error', (err) => reject(err.message || err))
-      .run();
-  });
+        ffmpeg(oggPath)
+        .toFormat("wav")
+        .outputOptions("-acodec pcm_s16le")
+        .output(wavPath)
+        .on("end", () => resolve())
+        .on("error", (err) => reject(err))
+        .run();
+    });
 };
 
 module.exports = { convertAudio };
