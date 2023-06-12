@@ -101,11 +101,11 @@
 
 // module.exports = { handleVoice };
 
-import fs from 'fs';
-import axios from 'axios';
-import ffmpeg from 'fluent-ffmpeg';
-import FormData from 'form-data';
-import { promisify } from 'util';
+const fs = require('fs');
+const axios = require('axios');
+const ffmpeg = require('fluent-ffmpeg');
+const FormData = require('form-data');
+const { promisify } = require('util');
 
 const writeFile = promisify(fs.writeFile);
 const unlink = promisify(fs.unlink);
@@ -169,4 +169,6 @@ async function handleVoice({ mimetype, data }) {
   }
 }
 
-export { handleVoice };
+module.exports = {
+  handleVoice
+};
