@@ -14,6 +14,10 @@ const openai = new OpenAIApi(configuration);
 // Function to generate a response based on chat history
 const generateResponse = async (chat) => {
   try {
+    // Fetch chat history
+    const historyLimit = parseInt(process.env.HISTORY_LIMIT);
+    const history = await chat.fetchMessages({ limit: historyLimit });
+
     // Create an introduction
     const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
 
@@ -45,17 +49,17 @@ const generateResponse = async (chat) => {
   }
 };
 
-// dall-e
+// Function to generate an image using DALL-E
 const drawGpt = async (text) => {
   try {
     const image = await openai.createImage({
       prompt: text,
       n: 1,
       size: "512x512"
-  });
-  const imgUrl = image.data.data[0].url;
+    });
+    const imgUrl = image.data.data[0].url;
 
-  return imgUrl;
+    return imgUrl;
   } catch (error) {
     // Catch specific errors if possible
     if (error.response && error.response.status) {
