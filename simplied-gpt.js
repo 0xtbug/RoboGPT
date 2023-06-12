@@ -40,11 +40,11 @@ const drawGpt = async (text) => {
     const completion = await openai.createImage({
       prompt: text,
       n: 1,
-      size: "512x512",
+      size: "512x512"
   });
   const imgUrl = completion.data.data[0].url;
   const media = await MessageMedia.fromUrl(imgUrl);
-  
+
   return media;
   } catch (error) {
     // Catch specific errors if possible
