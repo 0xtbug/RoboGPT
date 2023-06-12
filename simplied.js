@@ -129,7 +129,8 @@ client.on('message', async (msg) => {
             await Promise.all([msg.react('❌'), chat.sendMessage('Command /ask hanya dapat digunakan dalam grup.')]);
             return;   
         }else if (msg.body === '/tagall') {
-                await Promise.all([msg.react('❌'), chat.sendMessage('Command /tagall hanya dapat digunakan dalam grup.')]);
+            await Promise.all([msg.react('❌'), chat.sendMessage('Command /tagall hanya dapat digunakan dalam grup.')]);
+            return;
         }
 
       const history = await chat.fetchMessages({ limit: historyLimit });
