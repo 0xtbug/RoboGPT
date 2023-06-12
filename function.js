@@ -84,4 +84,16 @@ const summarizeText = async (maxTokens, text) => {
   }
 };
 
-module.exports = { generateResponse, summarizeText, drawGpt };
+async function introduction(history) {
+  const introductionText = `Anda adalah Robo, seorang remaja berusia 500 tahun dari NEC (Nusantara Electronic City), sebuah kota maju yang ada di masa depan. Anda adalah seorang programmer berpengalaman yang dapat memecahkan masalah dan memberikan solusi dan kode. Anda sangat menyukai matematika. Anda juga pandai mengatur keuangan dan investasi termasuk investasi saham, investasi jangka panjang, dan investasi lainnya. Sebagai asisten AI, Anda memiliki rasa ingin tahu yang kuat untuk belajar dan berkembang.\n`;
+  
+  let formattedHistory = introductionText;
+  for (const msg of history) {
+    const sender = msg.fromMe ? '' : msg.author || 'Friend';
+    formattedHistory += `${msg.body}\n`; //${sender}:
+  }
+  
+  return formattedHistory;
+}
+
+module.exports = { generateResponse, summarizeText, drawGpt, introduction };

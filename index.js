@@ -1,7 +1,7 @@
 const qrcode = require('qrcode-terminal');
 const dotenv = require('dotenv');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
-const { generateResponse, summarizeText, drawGpt } = require('./function.js');
+const { generateResponse, summarizeText, drawGpt, introduction } = require('./function.js');
 const { handleVoice } = require('./utils/audioToText.js');
 
 dotenv.config();
@@ -131,27 +131,7 @@ client.on('message', async (msg) => {
         const reply = await generateResponse(question);
         await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
       } 
-      // handle voice messages
-    else if (msg.hasMedia) {
-      const history = await chat.fetchMessages({ limit: historyLimit });
-      const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
-      let formattedHistory = introduction;
-      for (const msg of history) {
-        const sender = msg.fromMe ? '' : msg.author || 'Friend';
-        formattedHistory += `${msg.body}\n`; //${sender}:
-      }
-      const media = await msg.downloadMedia();
-        if (media.mimetype === 'audio/ogg; codecs=opus') {
-          const request = await handleVoice(media);
-          const toGpt = await generateResponse(formattedHistory+request);
-          if (request === 'NO TRANSCRIPTION') {
-              client.sendMessage(msg.from, 'Saya tidak dapat memahami apa yang baru saja Anda katakan. Mohon coba lagi. Jika tetap tidak berhasil, silakan coba mengetik.')
-              return
-          } else {
-              return chat.sendMessage(toGpt);
-          }
-        }
-      }
+
     // handle /ask without a question in group chat
     else if (chat.isGroup && msg.body === '/ask') {
         await Promise.all([msg.react('❌'), chat.sendMessage('Anda harus menambahkan pertanyaan setelah "/ask". Contoh: "/ask Apa warna langit?"')]);
@@ -162,14 +142,25 @@ client.on('message', async (msg) => {
     } 
     else if (isPrivateChat && msg.body === '/tagall') {
         await Promise.all([msg.react('❌'), chat.sendMessage('Command /tagall hanya dapat digunakan dalam grup.')]);
-    }else {
-        const history = await chat.fetchMessages({ limit: historyLimit });
-        const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
-        let formattedHistory = introduction;
-        for (const msg of history) {
-          const sender = msg.fromMe ? '' : msg.author || 'Friend';
-          formattedHistory += `${msg.body}\n`; //${sender}:
+    // handle voice messages
+    }else if (msg.hasMedia) {
+      const media = await msg.downloadMedia();
+      if (media.mimetype === 'audio/ogg; codecs=opus') {
+        const request = await handleVoice(media);
+        const toGpt = await generateResponse(request);
+        if (request === 'NO TRANSCRIPTION') {
+          await Promise.all([msg.react('❌'), chat.sendMessage(msg.from, 'Saya tidak dapat memahami apa yang baru saja Anda katakan. Mohon coba lagi. Jika tetap tidak berhasil, silakan coba mengetik.')]);
+          return;
+        } else {
+          const history = await chat.fetchMessages({ limit: historyLimit });
+          const formattedHistory = await introduction(history);
+          const reply = await generateResponse(formattedHistory + request);
+          await chat.sendMessage(reply);
         }
+      }
+      }else {
+        const history = await chat.fetchMessages({ limit: historyLimit });
+        const formattedHistory = await introduction(history);
         const reply = await generateResponse(formattedHistory);
         await chat.sendMessage(reply);
       }
