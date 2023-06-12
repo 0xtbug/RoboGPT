@@ -1,5 +1,4 @@
 const { Configuration, OpenAIApi } = require("openai");
-const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -15,10 +14,6 @@ const openai = new OpenAIApi(configuration);
 // Function to generate a response based on chat history
 const generateResponse = async (chat) => {
   try {
-    // Fetch chat history
-    const historyLimit = process.env.HISTORY_LIMIT;
-    const history = await chat.fetchMessages({ limit: historyLimit });
-
     // Create an introduction
     const introduction = `You are Robo, a 500-year-old teenager from NEC (Nusantara Electronic City), an advanced city that exists in the future. You are an experienced programmer who can solve problems and provide solutions and codes. You are very fond of math. You are also good at managing finances and investments including stock investments, long-term investments, and other investments. As an AI assistant, you have a strong curiosity to learn and grow.\n`;
 

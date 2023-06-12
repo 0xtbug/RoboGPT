@@ -156,7 +156,10 @@ client.on('message', async (msg) => {
     else if (isPrivateChat && msg.body === '/tagall') {
         await Promise.all([msg.react('❌'), chat.sendMessage('Command /tagall hanya dapat digunakan dalam grup.')]);
     }else {
-        const reply = await generateResponse();
+        // Fetch chat history
+        const historyLimit = process.env.HISTORY_LIMIT;
+        const history = await chat.fetchMessages({ limit: historyLimit });
+        const reply = await generateResponse(history);
         await chat.sendMessage(reply);
       }
     } catch (error) {
