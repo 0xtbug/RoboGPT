@@ -107,9 +107,11 @@ client.on('message', async (msg) => {
     else if (msg.body === '/ping') {
         const startTime = Date.now();
         console.log(`[!] Pinged\nS: ${msg.timestamp}\nR: ${startTime}`);
+        const response = await msg.reply("Pinging...");
         const endTime = Date.now();
         console.log(`E: ${endTime}`);
-        await client.sendMessage(`🏓 Pong! ${(endTime - startTime) / 1000}s`);
+        const chat = await response.getChat();
+        await chat.sendMessage(`🏓 Pong! ${(endTime - startTime) / 1000}s`);
       }
     // group
     else if (chat.isGroup && msg.body.startsWith('/ask ')) {
