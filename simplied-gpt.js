@@ -5,7 +5,6 @@ dotenv.config();
 
 // Create a configuration object with API key
 const configuration = new Configuration({
-  organization: process.env.ORGANIZATION,
   apiKey: process.env.OPENAI_API_KEY,
 });
 
