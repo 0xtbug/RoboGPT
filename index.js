@@ -156,6 +156,7 @@ client.on('message', async (msg) => {
           const formattedHistory = await introduction(history);
           const reply = await generateResponse(formattedHistory + request);
           await chat.sendMessage(reply);
+          return;
         }
       }
       }else {
