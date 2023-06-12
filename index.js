@@ -1,6 +1,6 @@
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
-const { generateResponse, summarizeText, drawGpt } = require('./simplied-gpt.js');
+const { generateResponse, summarizeText, drawGpt, transcribeAudio } = require('./simplied-gpt.js');
 const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
 const dotenv = require('dotenv');
 
@@ -130,6 +130,18 @@ client.on('message', async (msg) => {
         const reply = await generateResponse(question);
         await Promise.all([msg.react('✅'), chat.sendMessage(reply)]);
       } 
+      // handle voice messages
+    else if (msg.isVoiceMessage) {
+        const audioData = await msg.downloadVoice();
+        const filename = `voice_message_${Date.now()}.wav`;
+        fs.writeFileSync(filename, audioData);
+
+        const transcript = await transcribeAudio(filename);
+        await chat.sendMessage(transcript);
+
+        // Remove the temporary audio file
+        fs.unlinkSync(filename);
+      }
     // handle /ask without a question in group chat
     else if (chat.isGroup && msg.body === '/ask') {
         await Promise.all([msg.react('❌'), chat.sendMessage('Anda harus menambahkan pertanyaan setelah "/ask". Contoh: "/ask Apa warna langit?"')]);

@@ -1,4 +1,5 @@
 const { Configuration, OpenAIApi } = require("openai");
+const fs = require('fs');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -35,6 +36,7 @@ const generateResponse = async (chatHistory) => {
   }
 };
 
+// dall-e
 const drawGpt = async (text) => {
   try {
     const image = await openai.createImage({
@@ -45,6 +47,26 @@ const drawGpt = async (text) => {
   const imgUrl = image.data.data[0].url;
 
   return imgUrl;
+  } catch (error) {
+    // Catch specific errors if possible
+    if (error.response && error.response.status) {
+      console.log(`Error ${error.response.status}: ${error.response.data.error.message}`);
+    } else {
+      console.log(`Error: ${error.message}`);
+    }
+  }
+};
+
+// Transcribe audio
+const transcribeAudio = async (filename) => {
+  try {
+  const transcript = await openai.createTranscription(
+    fs.createReadStream(filename),
+    "whisper-1"
+  );
+  const textAudio = transcript.data.text;
+
+  return textAudio;
   } catch (error) {
     // Catch specific errors if possible
     if (error.response && error.response.status) {
@@ -83,4 +105,4 @@ const summarizeText = async (maxTokens, text) => {
   }
 };
 
-module.exports = { generateResponse, summarizeText, drawGpt };
+module.exports = { generateResponse, summarizeText, drawGpt, transcribeAudio };
