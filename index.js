@@ -5,8 +5,25 @@ const { handleIncomingMessage } = require('./lib/whatsapp');
 
 dotenv.config();
 
-const client = new Client();
-
+const client = new Client({
+    authStrategy: new LocalAuth({
+      clientId: 'client',
+      dataPath: './sessions',
+    }),
+    puppeteer: {
+      headless: true,
+      args: ['--no-sandbox'],
+    },
+    authTimeoutMs: 0,
+    qrMaxRetries: 0,
+    takeoverOnConflict: false,
+    takeoverTimeoutMs: 0,
+    userAgent:
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36',
+    bypassCSP: false,
+    proxyAuthentication: undefined
+  });
+  
 client.on('qr', (qr) => {
   console.log(`QR RECEIVED ${qr}`);
   qrcode.generate(qr, { small: true });
