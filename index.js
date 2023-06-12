@@ -2,6 +2,7 @@ const qrcode = require('qrcode-terminal');
 const crypto = require('crypto');
 const path = require("path");
 const dotenv = require('dotenv');
+const fs = require('fs');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const { generateResponse, summarizeText, drawGpt, transcribeAudio } = require('./function.js');
 const { convertAudio } = require('./utils/convert-audio.js');
