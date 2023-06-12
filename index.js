@@ -6,7 +6,6 @@ const fs = require('fs');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const { generateResponse, summarizeText, drawGpt, transcribeAudio } = require('./function.js');
 const { convertAudio } = require('./utils/convert-audio.js');
-const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
 
 dotenv.config();
 
@@ -142,10 +141,10 @@ client.on('message', async (msg) => {
         // Ignore non-audio media
         if (!media || !media.mimetype.startsWith("audio/")) return;
         
-        const randomString = crypto.randomBytes(6).toString('hex');
-        const fileName = `${Date.now()}_${randomString}.ogg`;
+        // const randomString = crypto.randomBytes(6).toString('hex');
+        // const fileName = `${Date.now()}_${randomString}.ogg`;
         const directoryPath = path.resolve(__dirname, 'audio');
-        const filePath = path.resolve(directoryPath, fileName);
+        const filePath = path.resolve(directoryPath, `1.ogg`);
         
         // Create the directory if it doesn't exist
         if (!fs.existsSync(directoryPath)) {
