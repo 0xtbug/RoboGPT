@@ -3,6 +3,7 @@ A bot for whatsapp that response to messages for you using gpt-3
 
 # Required
 - OpenAI apikey
+- Removebg apikey
 - Npm
 
 # Installation
