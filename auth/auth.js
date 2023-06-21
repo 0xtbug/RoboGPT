@@ -1,10 +1,7 @@
-const dotenv = require('dotenv');
 const {
     Client,
     LocalAuth
 } = require('whatsapp-web.js');
-
-dotenv.config();
 
 module.exports = {
     initializeClient: () => {
