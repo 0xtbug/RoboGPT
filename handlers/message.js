@@ -28,7 +28,7 @@ module.exports = {
 
           // menu
           if (msg.body === '/menu') {
-              const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup, robo support voice message jika anda malas ngetik cukup kirim voice message aja kepadanya!.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan /ask <pertanyaan>\n\n/tagall : Untuk mention semua pengguna yang ada didalam group\n\n/draw : Buat gambar yang anda inginkan hanya dengan kata-kata, layaknya sihir!, gunakan /draw <teks>\n\n/sticker : Kirimkan foto dengan /sticker untuk dikonversi menjadi stiker\n\n/summarize : Untuk merangkum teks, berita, laporan, dll. Gunakan /summarize <value> <teks>\nvalue setting : 60 = Pendek, 150 = Medium, 200 = Panjang\n\/bg : Untuk mengubah background foto misalnya warna merah jadi putih, gunakan /bg <warna>. Contoh: /bg blue (gunakan bahasa inggris)\n\n/donasi : Donasi Anda sangat membantu bagi saya!`;
+              const menuReply = `Hai, saya adalah Robo Assisten pribadi Anda. Senang bisa bertemu dengan Anda 😊\n\nRobo dapat digunakan dalam percakapan pribadi maupun dalam grup, robo support voice message jika anda malas ngetik cukup kirim voice message aja kepadanya!.\n\nBerikut beberapa penjelasan fitur yang bisa Anda coba:\n\n/ask : Untuk bertanya dalam grup, gunakan /ask <pertanyaan>\n\n/tagall : Untuk mention semua pengguna yang ada didalam group\n\n/draw : Buat gambar yang anda inginkan hanya dengan kata-kata, layaknya sihir!, gunakan /draw <teks>\n\n/sticker : Kirimkan foto dengan /sticker untuk dikonversi menjadi stiker\n\n/summarize : Untuk merangkum teks, berita, laporan, dll. Gunakan /summarize <value> <teks>\nvalue setting : 60 = Pendek, 150 = Medium, 200 = Panjang\n\n/bg : Untuk mengubah background foto misalnya warna merah jadi putih, gunakan /bg <warna>. Contoh: /bg blue (gunakan bahasa inggris)\n\n/donasi : Donasi Anda sangat membantu bagi saya!`;
               await Promise.all([msg.react('👋'), chat.sendMessage(menuReply)]);
           }
           // donate
@@ -117,7 +117,7 @@ module.exports = {
                     }
                     const chat = await msg.getChat();
                     media.data = newPhoto.base64;
-                    await Promise.all([msg.react('✅'), chat.sendMessage(reply, {
+                    await Promise.all([msg.react('✅'), chat.sendMessage(media, {
                       caption: `Ini hasilnya background telah diubah ke warna ${text}`
                     })]);
                 }
