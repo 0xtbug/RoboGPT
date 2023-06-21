@@ -115,7 +115,6 @@ module.exports = {
                     if (!newPhoto.success) {
                         return msg.reply('Terjadi kesalahan.');
                     }
-                    const chat = await msg.getChat();
                     media.data = newPhoto.base64;
                     await Promise.all([msg.react('✅'), chat.sendMessage(media, {
                       caption: `Ini hasilnya background telah diubah ke warna ${text}`
