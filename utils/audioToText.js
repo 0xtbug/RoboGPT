@@ -56,7 +56,9 @@ async function getTranscription(mimetype, data) {
     const fileName = `${Math.random().toString(36).substring(2)}`;
 
     // Write the base64 data to a file
-    await fs.promises.writeFile(fileName + '.ogg', data, { encoding: 'base64' })
+    await fs.promises.writeFile(fileName + '.ogg', data, {
+        encoding: 'base64'
+    })
     // Perform operation on file
 
     // Get Mp3 audio file from OGG
@@ -83,7 +85,10 @@ if (typeof module !== 'undefined' && !module.parent) {
 }
 
 
-async function handleVoice({ mimetype, data }) {
+async function handleVoice({
+    mimetype,
+    data
+}) {
     // Get the transcription
     let transcription;
     try {
@@ -99,4 +104,6 @@ async function handleVoice({ mimetype, data }) {
     }
 }
 
-module.exports = { handleVoice };
+module.exports = {
+    handleVoice
+};
