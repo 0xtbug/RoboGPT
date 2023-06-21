@@ -113,7 +113,7 @@ module.exports = {
                 if (media) {
                     const newPhoto = await EditPhotoRequest(media.data, text)
                     if (!newPhoto.success) {
-                        return msg.reply('Terjadi kesalahan.');
+                      return await Promise.all([msg.react('❌'), msg.reply('Terjadi kesalahan.')]);
                     }
                     media.data = newPhoto.base64;
                     await Promise.all([msg.react('✅'), chat.sendMessage(media, {
