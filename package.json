@@ -4,26 +4,27 @@
   "description": "A bot for whatsapp that response to messages for you using gpt-3",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon index.js",
     "start": "pm2 start index.js --deep-monitoring --attach --name gpt",
     "stop": "pm2 stop gpt"
   },
   "keywords": [],
   "author": "0xtbug",
   "dependencies": {
-    "fs": "^0.0.1-security",
-    "dotenv": "^16.0.3",
-    "openai": "^3.2.1",
-    "pm2": "^5.2.0",
-    "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.21.0",
-    "fluent-ffmpeg": "^2.1.2",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "axios": "^1.4.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.3",
+    "fluent-ffmpeg": "^2.1.2",
     "form-data": "^4.0.0",
+    "fs": "^0.0.1-security",
+    "nodemon": "^3.0.1",
+    "openai": "^3.2.1",
     "path": "^0.12.7",
-    "crypto": "^1.0.1"
+    "pm2": "^5.2.0",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.21.0"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/0xtbug/RoboGPT.git"

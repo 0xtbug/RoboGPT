@@ -12,7 +12,15 @@ module.exports = {
             }),
             puppeteer: {
                 headless: true,
-                args: ['--no-sandbox'],
+                args: [
+                    '--disable-gpu',
+                    '--disable-setuid-sandbox',
+                    '--disable-extensions',
+                    '--disable-dev-shm-usage',
+                    '--disable-accelerated-2d-canvas',
+                    '--no-first-run',
+                    '--no-sandbox',
+                ],
             },
         });
 
